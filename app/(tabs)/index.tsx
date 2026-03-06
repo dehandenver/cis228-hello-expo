@@ -48,6 +48,9 @@ export default function HomeScreen() {
   const [useSunriseTheme, setUseSunriseTheme] = useState(false);
   const [greeting, setGreeting] = useState('Hello');
   const [history, setHistory] = useState<string[]>([]);
+  const [counter, setCounter] = useState(0);
+  const [todoInput, setTodoInput] = useState('');
+  const [todos, setTodos] = useState<string[]>([]);
 
   const colors = useSunriseTheme ? THEMES.sunrise : THEMES.midnight;
   const trimmedName = name.trim();
@@ -59,6 +62,34 @@ export default function HomeScreen() {
 
   const addToHistory = (line: string) => {
     setHistory((prev) => [line, ...prev].slice(0, 5));
+  };
+
+  const handleResetName = () => {
+    setName('');
+  };
+
+  const handleIncrement = () => {
+    setCounter((prev) => prev + 1);
+  };
+
+  const handleDecrement = () => {
+    setCounter((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleAddTodo = () => {
+    const value = todoInput.trim();
+
+    if (!value) {
+      Alert.alert('Missing Item', 'Type a to-do item before adding.');
+      return;
+    }
+
+    setTodos((prev) => [value, ...prev]);
+    setTodoInput('');
+  };
+
+  const handleRemoveTodo = (indexToRemove: number) => {
+    setTodos((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const handlePress = () => {
@@ -138,6 +169,18 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.secondaryButton,
+                { borderColor: colors.inputBorder, backgroundColor: colors.inputBg },
+                pressed && styles.secondaryButtonPressed,
+              ]}
+              onPress={handleResetName}>
+              <Text style={[styles.secondaryButtonText, { color: colors.body }]}>Reset Name</Text>
+            </Pressable>
+          </View>
+
           <View style={[styles.previewBox, { borderColor: colors.inputBorder, backgroundColor: colors.previewBg }]}> 
             <Text style={[styles.previewLabel, { color: colors.badgeText }]}>Live Preview</Text>
             <Text style={[styles.previewText, { color: colors.title }]}> 
@@ -166,6 +209,71 @@ export default function HomeScreen() {
                 <Text key={`${line}-${index}`} style={[styles.historyItem, { color: colors.title }]}>
                   {index + 1}. {line}
                 </Text>
+              ))
+            )}
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.historyTitle, { color: colors.title }]}>Counter</Text>
+          </View>
+          <View style={[styles.counterBox, { borderColor: colors.inputBorder, backgroundColor: colors.previewBg }]}>
+            <Text style={[styles.counterValue, { color: colors.title }]}>{counter}</Text>
+            <View style={styles.buttonRow}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.secondaryButton,
+                  { borderColor: colors.inputBorder, backgroundColor: colors.inputBg },
+                  pressed && styles.secondaryButtonPressed,
+                ]}
+                onPress={handleDecrement}>
+                <Text style={[styles.secondaryButtonText, { color: colors.body }]}>Decrement</Text>
+              </Pressable>
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  { backgroundColor: colors.accent },
+                  pressed && [styles.buttonPressed, { backgroundColor: colors.accentPressed }],
+                ]}
+                onPress={handleIncrement}>
+                <Text style={[styles.buttonText, { color: colors.buttonText }]}>Increment</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.historyTitle, { color: colors.title }]}>Mini To-Do List</Text>
+          </View>
+          <TextInput
+            style={[styles.input, { borderColor: colors.inputBorder, backgroundColor: colors.inputBg, color: colors.title }]}
+            placeholder="Add a to-do item"
+            placeholderTextColor="#90a7d4"
+            value={todoInput}
+            onChangeText={setTodoInput}
+          />
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: colors.accent },
+                pressed && [styles.buttonPressed, { backgroundColor: colors.accentPressed }],
+              ]}
+              onPress={handleAddTodo}>
+              <Text style={[styles.buttonText, { color: colors.buttonText }]}>Add Item</Text>
+            </Pressable>
+          </View>
+
+          <View style={[styles.todoBox, { borderColor: colors.inputBorder, backgroundColor: colors.previewBg }]}> 
+            {todos.length === 0 ? (
+              <Text style={[styles.emptyHistoryText, { color: colors.body }]}>No to-do items yet.</Text>
+            ) : (
+              todos.map((todo, index) => (
+                <View key={`${todo}-${index}`} style={styles.todoRow}>
+                  <Text style={[styles.todoText, { color: colors.title }]}>- {todo}</Text>
+                  <Pressable onPress={() => handleRemoveTodo(index)}>
+                    <Text style={[styles.removeText, { color: colors.badgeText }]}>Remove</Text>
+                  </Pressable>
+                </View>
               ))
             )}
           </View>
@@ -360,6 +468,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     minHeight: 90,
+    marginBottom: 14,
   },
   emptyHistoryText: {
     fontSize: 13,
@@ -368,5 +477,41 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: 6,
     lineHeight: 18,
+  },
+  sectionHeader: {
+    marginBottom: 8,
+  },
+  counterBox: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 14,
+  },
+  counterValue: {
+    fontSize: 34,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  todoBox: {
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    minHeight: 90,
+  },
+  todoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  todoText: {
+    fontSize: 14,
+    flex: 1,
+  },
+  removeText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

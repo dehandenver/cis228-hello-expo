@@ -2,7 +2,19 @@
 
 ## Project Description
 
-`cis228-hello-expo` is a React Native app built with Expo for CIS 228. The app includes a custom heading, name input, interactive greeting button with alerts, theme toggle, random greeting generator, and greeting history.
+`cis228-hello-expo` is a React Native app built with Expo for CIS 228. It started from the Expo template and was customized into an interactive greeting app with extra challenge features.
+
+## Features
+
+- Custom heading and styled interface
+- Name input with character counter
+- Greeting alert button
+- Random greeting generator
+- Theme toggle (`Midnight` / `Sunrise`)
+- Greeting history with clear action
+- Reset name button
+- Counter with `Increment` and `Decrement` (never below `0`)
+- Mini to-do list with add/remove actions
 
 ## Installation
 
@@ -31,3 +43,9 @@ Then choose a target from the Expo terminal:
 - Press `w` to run on web.
 - Press `a` to run on Android emulator/device.
 - Scan the QR code with Expo Go to run on your phone.
+
+## Main File
+
+Core app UI and logic are in:
+
+- `app/(tabs)/index.tsx`
